@@ -145,7 +145,7 @@ public class PlayerController : MonoBehaviour
         }
         rountTimer.SetActive(true);
         Goal();   // checks if the goal is finished
-       countDownIsOver = false;   // pauses the game
+        countDownIsOver = false;   // pauses the game
         yield return new WaitForSeconds(1f);
     }
 
