@@ -5,29 +5,23 @@ using UnityEngine.UI;
 
 public class ProgressBar : MonoBehaviour
 {
+    public Slider bar;
+    public Gradient gradient;
+    public Image fill;
 
-    private Slider bar;
 
-    public float fillspeed = 0.5f;
-    private float targetValue = 0;
-
-    private void Awake()
+    public void SetMaxGoal(int progress)
     {
-        bar = gameObject.GetComponent<Slider>();
+        bar.maxValue = progress;
+
+        fill.color = gradient.Evaluate(1f);
     }
 
-    private void Start()
-    {
-        IncreaseProgress(0.75f);
-    }
-    private void Update()
-    {
-        if (bar.value < targetValue)
-            bar.value += fillspeed * Time.deltaTime;
-    }
 
-    public void IncreaseProgress (float newProgress)
+    public void SetProgress(int progress)
     {
-        targetValue = bar.value + newProgress;
+        bar.value = progress;
+
+        fill.color = gradient.Evaluate(bar.normalizedValue);
     }
 }

@@ -6,6 +6,7 @@ public class Trigger : MonoBehaviour
 {
     GameIF gameInterface;
     public int triggerscore = 20;
+    ProgressBar bar;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -13,6 +14,8 @@ public class Trigger : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             collision.GetComponent<GameIF>().score += triggerscore;
+          
+            
             Debug.Log(collision.GetComponent<GameIF>().score);
             
         }
