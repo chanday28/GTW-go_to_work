@@ -10,14 +10,14 @@ public class PlayerController : MonoBehaviour
 
     public float jumpForce = 5000f;
     float countDownTime = 3f;
-    [SerializeField] Text countdownText;
-    [SerializeField] GameObject rountTimer;
+    [SerializeField] TextMeshProUGUI countdownText;
+    //[SerializeField] GameObject rountTimer;
     private float roundTime = 0f;
     private bool goalCheck = false;
     private int goalCounter;
     [SerializeField] GameObject goalSuccesMessage;
     [SerializeField] GameObject goalFailMessage;
-    public bool isGrounded = false;
+    //public bool isGrounded = false;
     //
 
     public Rigidbody2D playerRigidBody2D;
@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Canvas gameIF;
 
-    public int maxProgress = 100, progress = 10;
+    public int maxProgress = 200, progress = 10;
     public int currentProgress;
     public ProgressBar bar;
 
@@ -111,10 +111,11 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Entruder" + other.name);
-        currentProgress += 10;
+        //currentProgress +=progress;
         MakeAProgress(currentProgress);
         score += 10;
         scoreText.text = score.ToString();
+        goalCounter+=10;
 
     }
 
@@ -129,18 +130,15 @@ public class PlayerController : MonoBehaviour
     void Jump()
     {
         if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Jump");
+        {            
             //playerRigidBody2D.AddForce(new Vector2(0f, 5f) , ForceMode2D.Impulse);         
-            //playerRigidBody2D.AddForce(new Vector2(0f, 10f), ForceMode2D.Impulse);
+            playerRigidBody2D.AddForce(new Vector2(0f, 10f), ForceMode2D.Impulse);
 
             float yValue = Mathf.Clamp(transform.position.y, -5f, 7f);
             //transform.position = new Vector2(transform.position.x, yValue + 1f * Time.deltaTime * jumpForce);
-            playerRigidBody2D.AddForce(new Vector2(0f, runSpeed), ForceMode2D.Impulse);
-
-            goalCounter++;
+                       
             Debug.Log("Jump");        
-            playerRigidBody2D.AddForce(new Vector2(0f, 10f), ForceMode2D.Impulse);            
+            //playerRigidBody2D.AddForce(new Vector2(0f, 10f), ForceMode2D.Impulse);            
 
         }
 
@@ -168,7 +166,7 @@ public class PlayerController : MonoBehaviour
 
     private void Goal()
     {
-        if(goalCounter == 3)
+        if(goalCounter == 100)
         {
             goalSuccesMessage.SetActive(true);
         } else
@@ -194,12 +192,12 @@ public class PlayerController : MonoBehaviour
         countDownIsOver = true;
 
 
-        while (roundTime < 7)
+        while (roundTime < 30)
         {
             yield return new WaitForSeconds(1f);
             roundTime++;
         }
-        rountTimer.SetActive(true);
+        //rountTimer.SetActive(true);
         Goal();   // checks if the goal is finished
         countDownIsOver = false;   // pauses the game
         yield return new WaitForSeconds(1f);

@@ -14,8 +14,8 @@ public class Spawner : MonoBehaviour
     private void Spawning()
     {
         Debug.Log("Spawning!");
-        float randomXvalue = Random.Range(0f, 300f);
-        Vector2 spawnPosition = new Vector2(randomXvalue, 7f);
+        float randomXvalue = Random.Range(-5f, 300f);
+        Vector2 spawnPosition = new Vector2(randomXvalue, -7.5f);
         Instantiate(RandomSpawn(), spawnPosition, Quaternion.identity);
     }
 
