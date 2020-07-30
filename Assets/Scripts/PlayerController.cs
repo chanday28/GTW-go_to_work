@@ -2,11 +2,24 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     //public float jumpForce = 5f;
-    
+
+    public float jumpForce = 5000f;
+    float countDownTime = 3f;
+    [SerializeField] Text countdownText;
+    [SerializeField] GameObject rountTimer;
+    private float roundTime = 0f;
+    private bool goalCheck = false;
+    private int goalCounter;
+    [SerializeField] GameObject goalSuccesMessage;
+    [SerializeField] GameObject goalFailMessage;
+    public bool isGrounded = false;
+    //
+
     public Rigidbody2D playerRigidBody2D;
     public GameObject _player;
 
@@ -60,10 +73,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "obstacle" && isInRage == false)
+        if (collision.gameObject.tag == "obstacle" && isInRage == false)
         {
             if (lifeCount > 0)
             {
+
                  lifeCount-=1;
                  Debug.Log("Life count:" + lifeCount);
                  Destroy(collision.gameObject);
@@ -77,6 +91,20 @@ public class PlayerController : MonoBehaviour
         else if (collision.gameObject.tag == "obstacle" && isInRage == true)
         {
             Destroy(collision.gameObject);
+
+                lifeCount -= 1;
+                Debug.Log("Life count:" + lifeCount);
+        }
+        else if (lifeCount == 0)
+        {
+                isInRage = true;
+                InRage();
+        }
+        
+        else if (collision.gameObject.tag == "obstacle" && isInRage == true)
+        {
+
+
         }
     }
 
@@ -109,6 +137,11 @@ public class PlayerController : MonoBehaviour
             float yValue = Mathf.Clamp(transform.position.y, -5f, 7f);
             //transform.position = new Vector2(transform.position.x, yValue + 1f * Time.deltaTime * jumpForce);
             playerRigidBody2D.AddForce(new Vector2(0f, runSpeed), ForceMode2D.Impulse);
+
+            goalCounter++;
+            Debug.Log("Jump");        
+            playerRigidBody2D.AddForce(new Vector2(0f, 10f), ForceMode2D.Impulse);            
+
         }
 
     }
@@ -133,11 +166,43 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    IEnumerator WaitAndStart()
+    private void Goal()
     {
-        yield return new WaitForSeconds(4f);
-        countDownIsOver = true;        
+        if(goalCounter == 3)
+        {
+            goalSuccesMessage.SetActive(true);
+        } else
+        {
+            goalFailMessage.SetActive(true);
+        }
     }
 
+    IEnumerator WaitAndStart()
+    {
+        //yield return new WaitForSeconds(4f);
+        //countDownIsOver = true;
+        //yield return new WaitForSeconds(2f);
+        while (countDownTime > 0)
+        {
+            countdownText.text = countDownTime.ToString("0");
+            yield return new WaitForSeconds(1f);
+            countDownTime--;
+        }
+        countdownText.text = "GO";
+        yield return new WaitForSeconds(1f);
+        countdownText.gameObject.SetActive(false);
+        countDownIsOver = true;
 
+
+        while (roundTime < 7)
+        {
+            yield return new WaitForSeconds(1f);
+            roundTime++;
+        }
+        rountTimer.SetActive(true);
+        Goal();   // checks if the goal is finished
+        countDownIsOver = false;   // pauses the game
+        yield return new WaitForSeconds(1f);
+    }
 }
+
