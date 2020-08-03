@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
 
     public Rigidbody2D playerRigidBody2D;
     public GameObject _player;
+    public Animator animeControl;
 
     public TextMeshProUGUI scoreText;
     int score = 0;
@@ -129,7 +130,7 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && isInRage == false)
         {            
             //playerRigidBody2D.AddForce(new Vector2(0f, 5f) , ForceMode2D.Impulse);         
             playerRigidBody2D.AddForce(new Vector2(0f, 10f), ForceMode2D.Impulse);
@@ -146,7 +147,7 @@ public class PlayerController : MonoBehaviour
 
     public void InRage()
     {
-
+        
         transform.position = new Vector2(transform.position.x + 1f * Time.deltaTime * rageSpeed, transform.position.y);
     }
 
