@@ -4,18 +4,10 @@ using UnityEngine;
 
 public class parallax : MonoBehaviour
 {
-    //public GameObject BG;
-    //public float speed;
-
-    //private void FixedUpdate()
-    //{
-    //    transform.position = new Vector2(transform.position.x + 1f * Time.deltaTime * speed, transform.position.y);
-    //}
+    
     private float length, startPos;
-    [SerializeField]
-    private GameObject cam;
+    [SerializeField] private GameObject cam;
     public float parallaxFX;
-
     private void Start()
     {
         startPos = transform.position.x;

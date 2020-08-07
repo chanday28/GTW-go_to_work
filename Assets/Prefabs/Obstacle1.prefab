@@ -104,6 +104,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7186621109005738539, guid: d4e686e6fb8ed79498cdffb1bfeff4ea,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7186621109005738540, guid: d4e686e6fb8ed79498cdffb1bfeff4ea,
         type: 3}
       propertyPath: m_Name
@@ -128,6 +133,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Trigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 4526779802013677905, guid: 8dd85619451c5e24ba1141bac40cbc55,
+        type: 3}
+      propertyPath: m_TagString
+      value: trigger
       objectReference: {fileID: 0}
     - target: {fileID: 4526779802013677998, guid: 8dd85619451c5e24ba1141bac40cbc55,
         type: 3}
