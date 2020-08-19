@@ -1,0 +1,6 @@
+Needs to be fixed:
+- Parallax needs to be smooth
+-More smooth animations
+-Animations for the obstacles and for slider to make it more clear ta
+-Choosing a character at the beginning
+- Fix spawning ( make it continuous)

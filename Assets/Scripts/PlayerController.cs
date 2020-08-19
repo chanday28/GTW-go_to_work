@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "man" && isInRage == true)
         {
-            manCol.FlyAwayMan();
+            //manCol.FlyAwayMan(); ------------- animation for obstacles turned off
             Debug.Log("IS IT " + other.gameObject.tag);
         }
         else if (other.gameObject.tag == "man" && isInRage == false)
@@ -155,12 +155,12 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.tag == "boxes" && isInRage == true)
         {
-            boxCol.FlyAwayBoxes();
+            //boxCol.FlyAwayBoxes(); ------------- animation for obstacles turned off
             Debug.Log("IT IS " + other.gameObject.tag);
         }
         else if (other.gameObject.tag == " boxes" && isInRage == false)
         {
-            boxCol.Dust();
+            //boxCol.Dust();  ------------- animation for obstacles turned off
             if (progress > 0)
             {
                 progress -= 10;
@@ -236,6 +236,10 @@ public class PlayerController : MonoBehaviour
 
     }
 
+
+    /// <summary>
+    ///  This is to avoid double jump. Needs to be finished in future to avoid  giving an opportunity to fly thoroughout the game
+    /// </summary>
     //private bool IsGrounded()
     //{
     //    RaycastHit2D raycast2d = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, .1f);
@@ -254,10 +258,7 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isJump", false);
 
         transform.position = new Vector2(transform.position.x + 1f * Time.deltaTime * rageSpeed, transform.position.y);
-
-        
-        
-                    
+                            
     }
 
     public void Rage()
@@ -268,8 +269,7 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isJump", false);
 
         transform.position = new Vector2(transform.position.x, -5f);
-        StartCoroutine(WaitAndRageRun());
-        
+        StartCoroutine(WaitAndRageRun());               
 
     }
 
@@ -329,10 +329,7 @@ public class PlayerController : MonoBehaviour
     } 
     
     IEnumerator WaitAndStart()
-    {
-        //yield return new WaitForSeconds(4f);
-        //countDownIsOver = true;
-        //yield return new WaitForSeconds(2f);
+    {        
         while (countDownTime > 0)
         {
             countdownText.text = countDownTime.ToString("0");
