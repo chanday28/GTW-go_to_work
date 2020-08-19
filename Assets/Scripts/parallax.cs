@@ -8,10 +8,11 @@ public class parallax : MonoBehaviour
     private float length, startPos;
     [SerializeField] private GameObject cam;
     public float parallaxFX;
+
     private void Start()
     {
         startPos = transform.position.x;
-        length = GetComponent<SpriteRenderer>().bounds.size.x;
+        length = GetComponentInChildren<SpriteRenderer>().bounds.size.x;
     }
 
     private void FixedUpdate()
@@ -23,4 +24,7 @@ public class parallax : MonoBehaviour
         if (temp > startPos + length) startPos += length;
         else if (temp < startPos - length) startPos -= length;
     }
+
+
+
 }

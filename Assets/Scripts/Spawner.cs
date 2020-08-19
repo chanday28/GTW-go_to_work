@@ -1,33 +1,45 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class Spawner : MonoBehaviour
 {
     public GameObject[] obstacles;
     [SerializeField] private GameObject player;
+    [SerializeField] private Transform _player;
+    Vector2 spawnPosition;
+    float randomXvalue, playerX;
 
     void Start()
     {
         StartCoroutine(WaitAndSpawn());
+        
+    }
+    private void Update()
+    {
         StartCoroutine(SelfDestruction());
+        //StartCoroutine(WaitAndSpawn());
+        //StartCoroutine(JustWait());
     }
 
     private void FixedUpdate()
     {
-        //StartCoroutine(WaitAndSpawn());
+        
         //StartCoroutine(SelfDestruction());
+        randomXvalue = Random.Range(5f, 100f);
+        playerX = _player.position.x;
     }
 
-    private void Spawning()
+    public void Spawning()
     {
         Debug.Log("Spawning!");
-        float randomXvalue = Random.Range(-5f, 300f);
-        Vector2 spawnPosition = new Vector2(randomXvalue, -7.5f);
+        //float randomXvalue = Random.Range(-5f, 300f);
+        //Vector2 spawnPosition = new Vector2(randomXvalue, -6.5f);
+        Vector2 spawnPosition = new Vector2( playerX + randomXvalue, -5f);
         Instantiate(RandomSpawn(), spawnPosition, Quaternion.identity);
-
-
-
+              
 
         //Instantiate(RandomSpawn(), spawnPosition, Quaternion.identity);
 
@@ -45,14 +57,15 @@ public class Spawner : MonoBehaviour
 
     IEnumerator WaitAndSpawn()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.5f);
         Spawning();
         StartCoroutine(WaitAndSpawn());
     }
 
+ 
     IEnumerator SelfDestruction()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(5f);
         Destroy(gameObject);
     }
 }

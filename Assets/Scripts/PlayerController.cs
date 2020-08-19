@@ -7,26 +7,28 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     public Rigidbody2D playerRigidBody2D;
-    private BoxCollider2D boxCollider;
+    //private BoxCollider2D boxCollider;
     public GameObject _player;
     private Animator animator;
-    [SerializeField] private float runSpeed = 10f;
+    private float runSpeed = 10f, rageSpeed = 20f/* hitSpeed = 5f*/;
+
     //[SerializeField] private float jumpForce = 5000f;
     public float jumpVelocity;
-        
+
     //private bool goalCheck = false;
-    
-   
+
+
     //public bool isGrounded = false;
-    
-       
+
+    ManAnim manCol;
+    BoxAnim boxCol;
+
+
     //RageMode    
-    private float rageSpeed = 20f;
-    private bool isInRage = false;
-    public GameObject RageBG;
-    
-    private Vector2 playerPos;
-    private int rageCount;
+   
+    public bool isInRage = false;
+    public GameObject BG,RageBG;
+    public int rageCount;
 
 
     //UI
@@ -43,7 +45,7 @@ public class PlayerController : MonoBehaviour
     float countDownTime = 3f;
     private float roundTime = 0f;
     private bool countDownIsOver;//counter 3...2...1 after which you need to tap to start running
-    //[SerializeField] GameObject rountTimer;
+    //[SerializeField] GameObject roundTimer;
     
     //Slider
     private int maxProgress;
@@ -64,66 +66,147 @@ public class PlayerController : MonoBehaviour
         maxProgress = 30;
         bar.SetMaxGoal(maxProgress);
         bar.SetProgress(0);
-        progress = 10;
+        progress = 0;
         scoreText.text = score.ToString();
         RageBG.SetActive(false);
+        BG.SetActive(true);
+
+    }
+
+     void Update()
+    {
+        CheckForRage();
+        if (countDownIsOver == true && isInRage == false)
+        {
+            StartRun();
+            Jump();
+        }
+    }
+
+    private void CheckForRage()
+    {
+        if (rageCount < 3)
+        {
+            isInRage = false;
+        }
+        else if (rageCount == 3)
+        {
+            isInRage = true;
+            Rage();
+            RageBG.SetActive(true);
+            BG.SetActive(false);
+        }
+
+        else
+        {
+            isInRage = false;
+            RageBG.SetActive(false);
+            BG.SetActive(true);
+        }
+
     }
 
     void MakeAProgress(int progress)
     {
         currentProgress += progress;
         bar.SetProgress(progress);
-        Debug.Log("1more rage!");
-    }
-    
-    private void Awake()
-    {
-       
+        Debug.Log("1more rage! Rage: " +rageCount.ToString());
     }
 
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //Debug.Log("Entruder" + other.name);
-        ////currentProgress +=progress;
-        //MakeAProgress(currentProgress);
-        //score += 10;
-        //scoreText.text = score.ToString();
-        //goalCounter+=10;
-
-        if (other.gameObject.tag == "trigger")
+        if (other.gameObject.tag == "trigger" && isInRage == false)
         {
             Debug.Log("Trigger " + other.gameObject.tag);
             rageCount++;
             score += 10;
             scoreText.text = score.ToString();
-            //currentProgress += progress;
-            MakeAProgress(currentProgress);
+            progress += 10;
+            MakeAProgress(progress);
+        } else if(other.gameObject.tag == "trigger" && isInRage == true)
+        {
+            Debug.Log("ENRAGED");
+            //score += 10;
+            //scoreText.text = score.ToString();
         }
 
-        if ( other.gameObject.tag == "obstacle")
+
+        if (other.gameObject.tag == "man" && isInRage == true)
         {
-            Debug.Log("Trigger " + other.gameObject.tag);
-            if (isInRage == false)
-            {
-                //rageCount = 0;
-                //Debug.Log("Rage Count reset");
-            }            
+            manCol.FlyAwayMan();
+            Debug.Log("IS IT " + other.gameObject.tag);
         }
+        else if (other.gameObject.tag == "man" && isInRage == false)
+        {
+            if (progress > 0)
+            {
+                progress -= 10;
+                MakeAProgress(progress);
+            }
+
+            if (score > 0)
+            {
+                score -= 10;
+                scoreText.text = score.ToString();
+            }
+        }
+
+
+        if (other.gameObject.tag == "boxes" && isInRage == true)
+        {
+            boxCol.FlyAwayBoxes();
+            Debug.Log("IT IS " + other.gameObject.tag);
+        }
+        else if (other.gameObject.tag == " boxes" && isInRage == false)
+        {
+            boxCol.Dust();
+            if (progress > 0)
+            {
+                progress -= 10;
+                MakeAProgress(progress);
+            }
+            if (score > 0)
+            {
+                score -= 10;
+                scoreText.text = score.ToString();
+            }
+        }
+
+        //if (other.gameObject.tag == "obstacle" && isInRage == false)
+        //{
+        //    Debug.Log("Trigger " + other.gameObject.tag);
+
+        //    if (progress > 0)
+        //    {
+        //        progress -= 10;
+        //        MakeAProgress(progress);
+        //    }
+
+        //    if (rageCount > 0) { rageCount--; }
+        //    if (score > 0) { score -= 10; scoreText.text = score.ToString(); }
+
+        //    //StartCoroutine(WasHit());
+
+
+        //    //rageCount = 0;
+        //    //Debug.Log("Rage Count reset");
+        //}
 
     }
 
        
     void StartRun()
     {
-        // Set running animation
-        animator.SetBool("isRun", true);
-        animator.SetBool("isJump", false);        
         animator.SetBool("inTransition", false);
         animator.SetBool("inRageRun", false);
-        
+        animator.SetBool("isRun", true);
+        animator.SetBool("isJump", false);
+        //animator.SetBool("isHit", false);
+
         float yValue = Mathf.Clamp(transform.position.y, -5f, 7f);
         transform.position = new Vector2(transform.position.x + 1f * Time.deltaTime * runSpeed, yValue);
+
                 
     }
 
@@ -132,24 +215,22 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isInRage == false)
         {
             //Set jump animation
-            animator.SetBool("isRun", false);
-            animator.SetBool("isJump", true);
             animator.SetBool("inTransition", false);
             animator.SetBool("inRageRun", false);
-
-
-            //playerRigidBody2D.AddForce(new Vector2(0f, 5f) , ForceMode2D.Impulse);     
+            animator.SetBool("isRun", false);
+            animator.SetBool("isJump", true);
+            //animator.SetBool("isHit", false);
+              
             float yValue = Mathf.Clamp(transform.position.y, -5f, 7f);
             //transform.position = new Vector2(transform.position.x, yValue + 1f * Time.deltaTime * jumpForce);
                        
             Debug.Log("Jump");
 
             playerRigidBody2D.velocity = Vector2.up * jumpVelocity;
+            playerRigidBody2D.AddForce(new Vector2(10f, 0f), ForceMode2D.Impulse);
 
-        } else
-        {
-            animator.SetBool("isJump", false);
-        }
+
+        } //animator.SetBool("isJump", false);
 
         
 
@@ -165,47 +246,76 @@ public class PlayerController : MonoBehaviour
 
     public void InRageRun()
     {
-        if(rageCount == 4)
-        {
-            animator.SetBool("isRun", false);
-            animator.SetBool("isJump", false);
-            animator.SetBool("inTransition", false);
-            animator.SetBool("inRageRun", true);
-            transform.position = new Vector2(transform.position.x + 1f * Time.deltaTime * rageSpeed, transform.position.y);
-            rageCount = 0;
-        }
+        StartCoroutine(UseUpRage());  
+
+        animator.SetBool("inTransition", false);
+        animator.SetBool("inRageRun", true);
+        animator.SetBool("isRun", false);
+        animator.SetBool("isJump", false);
+
+        transform.position = new Vector2(transform.position.x + 1f * Time.deltaTime * rageSpeed, transform.position.y);
+
         
+        
+                    
     }
 
     public void Rage()
-    {
-        if (rageCount == 3)
-        {
-            RageBG.SetActive(true);
+      {                   
+        animator.SetBool("inTransition", true);
+        animator.SetBool("inRageRun", false);
+        animator.SetBool("isRun", false);
+        animator.SetBool("isJump", false);
 
-            animator.SetBool("isRun", false);
-            animator.SetBool("isJump", false);
-            animator.SetBool("inTransition", true);
-            animator.SetBool("inRageRun", false);
-            rageCount++;
-        }
-    }
-
-
-    void Update()
-    {
-        if (countDownIsOver == true)
-        {
-            StartRun();
-            Jump();
-        }
-    }
-
-    private void FixedUpdate()
-    {
+        transform.position = new Vector2(transform.position.x, -5f);
+        StartCoroutine(WaitAndRageRun());
+        
 
     }
 
+
+    //void HitTheObject()
+    //{
+    //    animator.SetBool("isHit", true);
+    //    animator.SetBool("isRun", false);
+    //    animator.SetBool("inRageRun", false);
+    //    animator.SetBool("isJump", false);
+    //    animator.SetBool("isHit", false);
+
+    //    float yValue = Mathf.Clamp(transform.position.y, -5f, 7f);
+    //    transform.position = new Vector2(transform.position.x + 1f * Time.deltaTime * hitSpeed, yValue);
+               
+    //}
+
+         
+
+    IEnumerator WaitAndRageRun()
+    {
+        yield return new WaitForSeconds(1f);
+        InRageRun();
+              
+    }
+
+    IEnumerator UseUpRage()
+    {
+        
+        yield return new WaitForSeconds(2f);
+        
+        rageCount = 0;
+        bar.SetProgress(0);
+        progress = 0;
+        isInRage = false;
+        RageBG.SetActive(false);
+        BG.SetActive(true);
+
+    }
+ 
+    //IEnumerator WasHit()
+    //{
+    //    HitTheObject();
+    //    yield return new WaitForSeconds(1f);
+    //}
+    
     private void Goal()
     {
         if (goalCounter == 100)
@@ -216,8 +326,8 @@ public class PlayerController : MonoBehaviour
         {
             goalFailMessage.SetActive(true);
         }
-    }
-
+    } 
+    
     IEnumerator WaitAndStart()
     {
         //yield return new WaitForSeconds(4f);
@@ -240,15 +350,10 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForSeconds(1f);
             roundTime++;
         }
-        //rountTimer.SetActive(true);
+        //roundTimer.SetActive(true);
         Goal();   // checks if the goal is finished
         countDownIsOver = false;   // pauses the game
         yield return new WaitForSeconds(1f);
     }
-
-    //IEnumerator WaitAndRageRun()
-    //{
-    //    yield return new WaitUntil()
-    //}
 }
 
